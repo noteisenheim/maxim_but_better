@@ -75,6 +75,50 @@
 
         <h4> Actions with directories:</h4>
 
+        <!-- Change the directory -->
+
+        <form action=open_dir method="POST">
+            <input type="text" id="target_dir" name="target_dir">
+            <input type="submit" value="Open directory">
+        </form>
+
+        {% if open_dir_message %}
+            <p> {{open_dir_message}} </p>
+        {% endif %}
+
+        <!-- List elements in the directory -->
+
+        <form action=read_dir method="POST">
+            <input type="text" id="target_dir" name="target_dir">
+            <input type="submit" value="List content of directory">
+        </form>
+
+        {% if read_dir_message %}
+            <p> {{read_dir_message}} </p>
+        {% endif %}
+
+        <!-- Create the directory -->
+
+        <form action=make_dir method="POST">
+            <input type="text" id="new_dir" name="new_dir">
+            <input type="submit" value="Create directory">
+        </form>
+
+        {% if make_dir_message %}
+            <p> {{make_dir_message}} </p>
+        {% endif %}
+
+        <!-- Delete the directory -->
+
+        <form action=del_dir method="POST">
+            <input type="text" id="del_dir" name="del_dir">
+            <input type="submit" value="Delete directory">
+        </form>
+
+        {% if del_dir_message %}
+            <p> {{del_dir_message}} </p>
+        {% endif %}
+
     </body>
 
 </html>

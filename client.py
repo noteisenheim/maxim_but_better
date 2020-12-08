@@ -103,6 +103,50 @@ def move_file():
 
     return render_template("main.html", move_file_message = reply)
 
+@app.route("/open_dir", methods = ["POST", "GET"])
+def open_dir():
+    dirname = request.form.getlist('target_dir')[0]
+
+    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "dir {} is opened".format(dirname)
+
+    return render_template("main.html", open_dir_message = reply)
+
+@app.route("/read_dir", methods = ["POST", "GET"])
+def read_dir():
+    dirname = request.form.getlist('target_dir')[0]
+
+    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "content is: 1) biba 2) boba 3) pupa 4) lupa"
+
+    return render_template("main.html", read_dir_message = reply)
+
+@app.route("/make_dir", methods = ["POST", "GET"])
+def make_dir():
+    dirname = request.form.getlist('new_dir')[0]
+
+    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "directory {} is created".format(dirname)
+
+    return render_template("main.html", make_dir_message = reply)
+
+@app.route("/del_dir", methods = ["POST", "GET"])
+def del_dir():
+    dirname = request.form.getlist('del_dir')[0]
+
+    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "directory {} is deleted (oops)".format(dirname)
+
+    return render_template("main.html", del_dir_message = reply)
+
 if __name__ == "__main__":
     my_ip = "10.91.52.97"
     lol = "0.0.0.0"
