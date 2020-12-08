@@ -340,14 +340,14 @@ def command_name(com):
     return temp
 
 # init datanodes
-datanode1 = ("10.0.0.12", 20001)
-datanode2 = ("10.0.0.13", 20001)
+# datanode1 = ("10.0.0.12", 20001)
+# datanode2 = ("10.0.0.13", 20001)
 
-datanodes = [datanode1, datanode2]
+# datanodes = [datanode1, datanode2]
 
-datanodes_rating = [0 for dn in datanodes]
+# datanodes_rating = [0 for dn in datanodes]
 
-namenode_datanode_sockets_raw, datanodes_start_info = first_connect(datanodes)
+# namenode_datanode_sockets_raw, datanodes_start_info = first_connect(datanodes)
 
 '''
 TESTING AREA
@@ -355,7 +355,7 @@ TESTING AREA
 
 # init cloud directory
 
-init_create_cloudstorage(namenode_datanode_sockets_raw, cloud_dir_name="new_cloud_dir")
+# init_create_cloudstorage(namenode_datanode_sockets_raw, cloud_dir_name="new_cloud_dir")
 cd('new_cloud_dir')
 
 
@@ -370,13 +370,13 @@ print('[!] START WORKING')
 # server recieve
 # server recieve
 first_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_addr = ("10.0.0.11", 2345)
+server_addr = ("10.91.51.111", 2345)
 first_server_socket.bind(server_addr)
 first_server_socket.listen(1)
 first_server_socket.settimeout(2) #
 
 second_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_addr2 = ("10.0.0.11", 2346)
+server_addr2 = ("10.91.51.111", 2346)
 second_server_socket.bind(server_addr2)
 second_server_socket.listen(1)
 second_server_socket.settimeout(2) #
@@ -401,35 +401,35 @@ while True:
         except:
             pass
 
-    time.sleep(1)
-    print('check datanodes')
-    for i in range(len(namenode_datanode_sockets_raw)):
-        print('check datanode {}'.format(datanodes[i]))
-        dsocket = namenode_datanode_sockets_raw[i]
-        try:
-            # print('send {}'.format(i))
-            dsocket.send(bytes("test_message", 'utf8'))
-            response = str(dsocket.recv(1024), 'utf8')
+    # time.sleep(1)
+    # print('check datanodes')
+    # for i in range(len(namenode_datanode_sockets_raw)):
+    #     print('check datanode {}'.format(datanodes[i]))
+    #     dsocket = namenode_datanode_sockets_raw[i]
+    #     try:
+    #         # print('send {}'.format(i))
+    #         dsocket.send(bytes("test_message", 'utf8'))
+    #         response = str(dsocket.recv(1024), 'utf8')
 
-            if 'SHUT_UP' in response:
-            	down_datanodes.append(i)
-            	print('[w] {} is down. Continues without it.'.format(datanodes[i]))
-            else:
-            	# only workable datanodes
-            	namenode_datanode_sockets.append(dsocket)
+    #         if 'SHUT_UP' in response:
+    #         	down_datanodes.append(i)
+    #         	print('[w] {} is down. Continues without it.'.format(datanodes[i]))
+    #         else:
+    #         	# only workable datanodes
+    #         	namenode_datanode_sockets.append(dsocket)
 
-        except:
-            down_datanodes.append(i)
-            print('[w] {} is down. Continues without it.'.format(datanodes[i]))
-
-
-    if len(namenode_datanode_sockets) == 0:
-        print("[w] FATAL ERROR. ALL DATANODES DOWN")
-        break
+    #     except:
+    #         down_datanodes.append(i)
+    #         print('[w] {} is down. Continues without it.'.format(datanodes[i]))
 
 
+    # if len(namenode_datanode_sockets) == 0:
+    #     print("[w] FATAL ERROR. ALL DATANODES DOWN")
+    #     break
 
-    time.sleep(1)
+
+
+    # time.sleep(1)
     # create_file(namenode_datanode_sockets, 'tempfile.txt')
     # receive command and arguments
     
@@ -437,14 +437,12 @@ while True:
     decoded_msg = str(msg, "utf8")
     if decoded_msg != "":
         print(decoded_msg)
-        temp = decoded_msg
-        command, argument1, argument2 = temp.split(
-            "%"
-        )  # argument is file name, directort name and etc.
-        command = int(command)
-        command_description = command_name(command)
+        decoded_dict = json.loads(decoded_msg)
+        command = decoded_dict["command"]
+        argument1 = decoded_dict["argument1"]
+        argument2 = decoded_dict["argument2"]
         print("Command id:", command)
-        print("TO DO: ", command_description)
+        # print("TO DO: ", command_description)
         print("Argument01 (file/dir name): ", argument1)
         print("Argument02 (path): ", argument2)
         decoded_msg = ""
@@ -453,11 +451,9 @@ while True:
         response = ""
         if command == -1:
             # authorize user
-            json_msg  = json.loads(decoded_msg)
-            login = json_msg['args']['login']
-            pswrd = json_msg['args']['password']
-            if login in CREDENTIALS.keys():
-                if CREDENTIALS[login] == pswrd:
+            print('robit')
+            if argument1 in CREDENTIALS.keys():
+                if CREDENTIALS[argument1] == argument2:
                     response = json.dumps({'response': 'yes'})
                 else:
                     response = json.dumps({'response': 'no'})
