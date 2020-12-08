@@ -12,6 +12,7 @@ from math import ceil
 
 CURRENT_USER_LOC = ""
 USER_TREE = {'':''}
+CREDENTIALS = {'login': b'[\xaaa\xe4\xc9\xb9??\x06\x82%\x0bl\xf83\x1b~\xe6\x8f\xd8'}
 
 
 def first_connect(addrs):
@@ -438,21 +439,32 @@ while True:
     msg = client_socket.recv(1024)
     decoded_msg = str(msg, "utf8")
     if decoded_msg != "":
+
         print(decoded_msg)
-        temp = decoded_msg
-        command, argument1, argument2 = temp.split(
-            "%"
-        )  # argument is file name, directort name and etc.
-        command = int(command)
-        command_description = command_name(command)
+        decoded_dict = json.loads(decoded_msg)
+        command = decoded_dict["command"]
+        argument1 = decoded_dict["argument1"]
+        argument2 = decoded_dict["argument2"]
         print("Command id:", command)
-        print("TO DO: ", command_description)
+        # print("TO DO: ", command_description)
         print("Argument01 (file/dir name): ", argument1)
         print("Argument02 (path): ", argument2)
         decoded_msg = ""
 
         # do smth create, get info etc
         response = ""
+        
+        if command == -1:
+            # authorize user
+            print('robit')
+            if argument1 in CREDENTIALS.keys():
+                if CREDENTIALS[argument1] == argument2:
+                    response = json.dumps({'response': 'yes'})
+                else:
+                    response = json.dumps({'response': 'no'})
+            else:
+                response = json.dumps({'response': 'no'})
+
         if command == 0:
             # get size of the file
             lost_user(namenode_datanode_sockets)
