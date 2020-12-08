@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import socket
 import json
+import hashlib
 
 ok = "ok"
 
@@ -34,7 +35,8 @@ def try_login():
 
     login = request.form.getlist('login')[0]
     password = request.form.getlist('password')[0]
-    message_dict = {"command" : -1, "argument1" : login, "argument2" : password}
+    encoded_password = hashlib.sha1(password).digest()
+    message_dict = {"command" : -1, "argument1" : login, "argument2" : encoded_password}
     message = json.dumps(message_dict)
 
     # reply = send_to_namenode(SERVER_ADDR, message)
