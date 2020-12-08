@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import socket
 import json
+import hashlib
 
 ok = "ok"
 
@@ -34,7 +35,8 @@ def try_login():
 
     login = request.form.getlist('login')[0]
     password = request.form.getlist('password')[0]
-    message_dict = {"command" : -1, "argument1" : login, "argument2" : password}
+    encoded_password = hashlib.sha1(password.encode('utf-8')).digest()
+    message_dict = {"command" : -1, "argument1" : login, "argument2" : str(encoded_password)}
     message = json.dumps(message_dict)
 
     # reply = send_to_namenode(SERVER_ADDR, message)
@@ -153,10 +155,39 @@ def write_file():
 
     message_dict = {"command" : 3, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "file successfully uploaded"
 
-    return render_template("main.html", write_file_message = reply)
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "file successfully uploaded"
+
+    datanodes_data = reply.split('%')
+    filename_prefix = datanodes_data[-2]
+
+    ips = [datanodes_data[i] for i in range(1, len(datanodes_data)-2) if i % 2 != 0]
+    ports = [datanodes_data[i] for i in range(1, len(datanodes_data)-2) if i % 2 == 0]
+
+    time.sleep(2)
+    # send FILE
+    for i in range(len(ips)):
+        try:
+            s = socket.socket()
+
+            s.connect((ips[i], int(ports[i])))
+            # We can send file sample.txt
+            file = open(filename, "rb")
+            SendData = file.read(1024)
+
+            while SendData:
+                # Now send the content of sample.txt to server
+                s.send(SendData)
+                SendData = file.read(1024)
+
+            # Close the connection from client side
+            s.close()
+        except:
+            return render_template("main.html", write_file_message = "Error occured while uploading file")
+    return render_template("main.html", write_file_message = "Successfully uploaded the file!")
+
+
 
 if __name__ == "__main__":
     my_ip = "10.91.52.97"
