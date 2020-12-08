@@ -62,7 +62,7 @@ def create_file():
 def delete_file():
     filename = request.form.getlist('filename')[0]
 
-    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message_dict = {"command" : 4, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "file was deleted"
@@ -73,7 +73,7 @@ def delete_file():
 def info_file():
     filename = request.form.getlist('filename')[0]
 
-    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message_dict = {"command" : 5, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "info about file"
@@ -84,7 +84,7 @@ def info_file():
 def copy_file():
     filename = request.form.getlist('filename')[0]
 
-    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message_dict = {"command" : 6, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "file was copied"
@@ -96,7 +96,7 @@ def move_file():
     filename = request.form.getlist('filename')[0]
     dest_dir = request.form.getlist('dest_dir')[0]
 
-    message_dict = {"command" : 1, "argument1" : filename, "argument2" : dest_dir}
+    message_dict = {"command" : 7, "argument1" : filename, "argument2" : dest_dir}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "file was moved"
@@ -107,7 +107,7 @@ def move_file():
 def open_dir():
     dirname = request.form.getlist('target_dir')[0]
 
-    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message_dict = {"command" : 8, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "dir {} is opened".format(dirname)
@@ -118,7 +118,7 @@ def open_dir():
 def read_dir():
     dirname = request.form.getlist('target_dir')[0]
 
-    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message_dict = {"command" : 9, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "content is: 1) biba 2) boba 3) pupa 4) lupa"
@@ -129,7 +129,7 @@ def read_dir():
 def make_dir():
     dirname = request.form.getlist('new_dir')[0]
 
-    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message_dict = {"command" : 10, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "directory {} is created".format(dirname)
@@ -140,12 +140,23 @@ def make_dir():
 def del_dir():
     dirname = request.form.getlist('del_dir')[0]
 
-    message_dict = {"command" : 1, "argument1" : dirname, "argument2" : ""}
+    message_dict = {"command" : 11, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = "directory {} is deleted (oops)".format(dirname)
 
     return render_template("main.html", del_dir_message = reply)
+
+@app.route("/write_file", methods = ["POST", "GET"])
+def write_file():
+    filename = request.form.getlist('filename')[0]
+
+    message_dict = {"command" : 3, "argument1" : filename, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "file successfully uploaded"
+
+    return render_template("main.html", write_file_message = reply)
 
 if __name__ == "__main__":
     my_ip = "10.91.52.97"
