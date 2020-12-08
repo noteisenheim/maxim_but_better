@@ -80,32 +80,54 @@ def rmdir(decoded_msg):
 		print('[w] CANNOT DELETE DIRECTORY {}'.format(dir_path))
 
 def send_file(decoded_msg, nsocket):
-	file_path = decoded_msg.split()[-1]
-	
-	# # start just for test
-	# with open(file_path[1:], 'w') as f:
-	# 	f.write('5'*100)
-	# # end just for test
-
-
-	file_size = os.path.getsize(file_path[1:])
-
+	arguments = decoded_msg.split()[-1]
+	file_path, clientip, clientport = arguments.split('%')
+	time.sleep(1)
 
 	try:
-		nsocket.send(bytes('{}<SEPARATOR>{}'.format(file_path, file_size), 'utf8'))
+		datanode_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-		time.sleep(1)
+		print('Try to connect to client {}:{}'.format(clientip, clientport))
 
-		progress = tqdm.tqdm(range(int(ceil(file_size/8))), "Sending {}".format(file_path), unit="B", unit_scale=True, unit_divisor=8)
-		with open(file_path[1:], 'rb') as f:
-			for _ in progress:
-				bytes_read = f.read(8)
+		datanode_client_socket.connect((clientip, int(clientport)))
+
+		print('Connected to client')
+		
+		# We can send file sample.txt
+		file = open(file_path[1:], "rb")
+		SendData = file.read(1024)
+
+		print('Start sending file')
+
+		while SendData:
+			# Now we can receive data from server
+			# Now send the content of sample.txt to server
+			datanode_client_socket.send(SendData)
+			SendData = file.read(1024)
+
+		# Close the connection from client side
+		print('Close the connection')
+		datanode_client_socket.close()
+
+
+		# file_size = os.path.getsize(file_path[1:])
+
+
+	# try:
+		# nsocket.send(bytes('{}<SEPARATOR>{}'.format(file_path, file_size), 'utf8'))
+
+		# time.sleep(1)
+
+		# progress = tqdm.tqdm(range(int(ceil(file_size/8))), "Sending {}".format(file_path), unit="B", unit_scale=True, unit_divisor=8)
+		# with open(file_path[1:], 'rb') as f:
+		# 	for _ in progress:
+		# 		bytes_read = f.read(8)
 				
-				if not bytes_read:
-					break
+		# 		if not bytes_read:
+		# 			break
 
-				nsocket.sendall(bytes_read)
-				progress.update(len(bytes_read))
+		# 		nsocket.sendall(bytes_read)
+		# 		progress.update(len(bytes_read))
 
 		print('[!] SEND FILE {}'.format(file_path))
 
