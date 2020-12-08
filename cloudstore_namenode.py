@@ -12,6 +12,7 @@ from math import ceil
 
 CURRENT_USER_LOC = ""
 USER_TREE = {'':''}
+CREDENTIALS = {'login': 'password'}
 
 
 def first_connect(addrs):
@@ -450,6 +451,19 @@ while True:
 
         # do smth create, get info etc
         response = ""
+        if command == -1:
+            # authorize user
+            json_msg  = json.loads(decoded_msg)
+            login = json_msg['args']['login']
+            pswrd = json_msg['args']['password']
+            if login in CREDENTIALS.keys():
+                if CREDENTIALS[login] == pswrd:
+                    response = json.dumps({'response': 'yes'})
+                else:
+                    response = json.dumps({'response': 'no'})
+            else:
+                response = json.dumps({'response': 'no'})
+
         if command == 0:
             # get size of the file
             lost_user(namenode_datanode_sockets)
