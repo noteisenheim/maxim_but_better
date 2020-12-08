@@ -35,7 +35,7 @@ def try_login():
 
     login = request.form.getlist('login')[0]
     password = request.form.getlist('password')[0]
-    encoded_password = hashlib.sha1(password).digest()
+    encoded_password = hashlib.sha1(password.encode('utf-8')).digest()
     message_dict = {"command" : -1, "argument1" : login, "argument2" : encoded_password}
     message = json.dumps(message_dict)
 
