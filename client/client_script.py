@@ -114,7 +114,7 @@ if command_id != 3 and command_id != 2:
     11 ok
         need confirmation if there are files in the directory
     """
-    # receive resonse
+    # receive response
     if command_id != 2:
         msg = ""
         while msg == "":
@@ -212,7 +212,7 @@ else:
         s.bind(("10.0.0.100", PORT))
         s.listen(10)
 
-        # Now we can establish connection with clien
+        # Now we can establish connection with server
         conn, addr = s.accept()
 
         filename = sys.argv[2]  # should take from client
