@@ -19,25 +19,27 @@ def try_login():
 
     login = request.form.getlist('login')[0]
     password = request.form.getlist('password')[0]
-    message_dict = {"command" : "authorization", "agrs" : {"login" : login, "password" : password}}
+    message_dict = {"command" : -1, "agrs" : {"login" : login, "password" : password}}
     message = json.dumps(message_dict)
 
     # send message to authorize
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(SERVER_ADDR)
-    client_socket.send(bytes(message, "utf8"))
+    # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # client_socket.connect(SERVER_ADDR)
+    # client_socket.send(bytes(message, "utf8"))
 
-    msg = ""
-    while msg == "":
-        msg = client_socket.recv(BUFF_SIZE)
-    decoded_msg = str(msg, "utf8")
-    client_socket.close()
+    # msg = ""
+    # while msg == "":
+    #     msg = client_socket.recv(BUFF_SIZE)
+    # decoded_msg = str(msg, "utf8")
 
-    decoded = json.loads(decoded_msg)
+    # client_socket.close()
+
+    # decoded = json.loads(decoded_msg)
+    decoded = {"answer" : "no"}
 
     if decoded["answer"] == "yes":
-        pass
+        return render_template("main.html")
     else:
         return render_template("index.html", message = "Incorrent credentials")
 
