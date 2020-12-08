@@ -7,7 +7,7 @@ import os
 from math import ceil
 
 # with open('cloudstore_namenode_conf.json') as json_file:
-#    configuration = json.load(json_file)
+#   configuration = json.load(json_file)
 
 
 CURRENT_USER_LOC = ""
@@ -173,7 +173,7 @@ def lost_user(my_sockets):
     USER_TREE = {'':''}
     CURRENT_USER_LOC = ''
 
-def get_file(my_sockets, filename="temp_file.txt"):
+def get_file(my_sockets, filename, clientip, clientport):
 
     global USER_TREE
     global CURRENT_USER_LOC
@@ -187,34 +187,34 @@ def get_file(my_sockets, filename="temp_file.txt"):
         return False
 
     dsocket = random.choice(my_sockets)
-    dsocket.send(bytes('get_file {}'.format(req_location), 'utf8'))
+    dsocket.send(bytes('get_file {}%{}%{}'.format(req_location, clientip, clientport), 'utf8'))
 
-    print('[!] SEND COMMAND get_file {}'.format(req_location))
-    print('[!] WAITING FOR THE FILE {}'.format(req_location))
+    print('[!] SEND COMMAND get_file {}%{}%{}'.format(req_location, clientip, clientport))
+    # print('[!] WAITING FOR THE FILE {}'.format(req_location))
 
-    time.sleep(1)
+    # time.sleep(1)
 
 
-    # get info about file
-    info_msg = str(dsocket.recv(1024), 'utf8')
-    filename, filesize = info_msg.split('<SEPARATOR>')
+    # # get info about file
+    # info_msg = str(dsocket.recv(1024), 'utf8')
+    # filename, filesize = info_msg.split('<SEPARATOR>')
 
-    print('[!] GET INFO: {} {}'.format(filename, filesize))
+    # print('[!] GET INFO: {} {}'.format(filename, filesize))
 
-    filesize = int(filesize)
-    filename = os.path.basename(filename)
+    # filesize = int(filesize)
+    # filename = os.path.basename(filename)
 
-    progress = tqdm.tqdm(range(int(ceil(filesize/8))), "Receiving {}".format(filename), unit="B", unit_scale=True, unit_divisor=8)
-    with open(filename, "wb") as f:
-        for _ in progress:
+    # progress = tqdm.tqdm(range(int(ceil(filesize/8))), "Receiving {}".format(filename), unit="B", unit_scale=True, unit_divisor=8)
+    # with open(filename, "wb") as f:
+    #    for _ in progress:
 
-            bytes_read = dsocket.recv(8)
-            if not bytes_read:
-                break
-            f.write(bytes_read)
-            progress.update(len(bytes_read))
+    #       bytes_read = dsocket.recv(8)
+    #       if not bytes_read:
+    #          break
+    #       f.write(bytes_read)
+    #       progress.update(len(bytes_read))
 
-    print('[!] RECIEVED FILE {}'.format(filename))
+    # print('[!] RECIEVED FILE {}'.format(filename))
 
     return filename
 
@@ -248,23 +248,23 @@ def upload_file(my_sockets, local_fname="tempfile.txt", server_filename="tempfil
 
     try:
 
-    #    for dsocket in my_sockets:
-    #       dsocket.send(bytes("{}<SEPARATOR>{}".format(file_path, file_size), 'utf8'))
+    #   for dsocket in my_sockets:
+    #      dsocket.send(bytes("{}<SEPARATOR>{}".format(file_path, file_size), 'utf8'))
 
-    #    time.sleep(1)
+    #   time.sleep(1)
 
-    #    progress = tqdm.tqdm(range(int(ceil(file_size/8))), "Sending {}".format(file_path), unit="B", unit_scale=True, unit_divisor=8)
-    #    with open(local_fname, 'rb') as f:
-    #          for _ in progress:
-    #             bytes_read = f.read(8)
+    #   progress = tqdm.tqdm(range(int(ceil(file_size/8))), "Sending {}".format(file_path), unit="B", unit_scale=True, unit_divisor=8)
+    #   with open(local_fname, 'rb') as f:
+    #        for _ in progress:
+    #          bytes_read = f.read(8)
                     
-    #             if not bytes_read:
-    #                break
+    #          if not bytes_read:
+    #            break
 
-    #             for dsocket in my_sockets:
-    #                dsocket.sendall(bytes_read)
+    #          for dsocket in my_sockets:
+    #            dsocket.sendall(bytes_read)
 
-    #             progress.update(len(bytes_read))
+    #          progress.update(len(bytes_read))
         print('[!] Upload  file {}'.format(local_fname))
         USER_TREE[splitted_path[-2]].append(splitted_path[-1])
     except:
@@ -469,39 +469,45 @@ while True:
             response = "File {} is created".format(argument1) if status else "File is not created"
             # pass
         elif command == 2:
-            file_name_get = get_file(namenode_datanode_sockets, argument1)
+            if socket_flag == 0:
+                ServerIp = "10.0.0.100"
+                PORT = 9899
+            else:
+                ServerIp = "10.0.0.101"
+                PORT = 9899
+            file_name_get = get_file(namenode_datanode_sockets, argument1, ServerIp, PORT)
             if file_name_get == False:
                 response = "No such file"
                 client_socket.send(bytes(response, "utf8"))
-
             else:
                 response = "File {}".format(argument1)
                 client_socket.send(bytes(response, "utf8"))
-                filename = argument1
+                # filename = argument1
 
-                time.sleep(2)
-                if socket_flag == 0:
-                    ServerIp = "10.0.0.100"
-                    PORT = 9899
-                else:
-                    ServerIp = "10.0.0.101"
-                    PORT = 9899
-                s = socket.socket()
+                # time.sleep(2)
+                # if socket_flag == 0:
+                #    ServerIp = "10.0.0.100"
+                #    PORT = 9899
+                # else:
+                #    ServerIp = "10.0.0.101"
+                #    PORT = 9899
+                # s = socket.socket()
                 
-                s.connect((ServerIp, PORT))
+                # s.connect((ServerIp, PORT))
 
-                # We can send file sample.txt
-                file = open(filename, "rb")
-                SendData = file.read(1024)
+                # # We can send file sample.txt
+                # file = open(filename, "rb")
+                # SendData = file.read(1024)
 
-                while SendData:
-                    # Now we can receive data from server
-                    # Now send the content of sample.txt to server
-                    s.send(SendData)
-                    SendData = file.read(1024)
+                # while SendData:
+                #    # Now we can receive data from server
+                #    # Now send the content of sample.txt to server
+                #    s.send(SendData)
+                #    SendData = file.read(1024)
 
-                # Close the connection from client side
-                s.close()
+                # # Close the connection from client side
+                # s.close()
+                print('[!] Send information about client to datanode')
                 # pass
             # send FILE
 
@@ -535,22 +541,22 @@ while True:
 
             # while True:
 
-            #    # Receive any data from client side
-            #    RecvData = conn.recv(1024)
-            #    while RecvData:
-            #       file.write(RecvData)
-            #       RecvData = conn.recv(1024)
+            #   # Receive any data from client side
+            #   RecvData = conn.recv(1024)
+            #   while RecvData:
+            #      file.write(RecvData)
+            #      RecvData = conn.recv(1024)
 
-            #    # Close the file opened at server side once copy is completed
-            #    file.close()
-            #    print("\n File has been copied successfully \n")
+            #   # Close the file opened at server side once copy is completed
+            #   file.close()
+            #   print("\n File has been copied successfully \n")
 
-            #    # Close connection with client
-            #    conn.close()
-            #    print("\n Server closed the connection \n")
+            #   # Close connection with client
+            #   conn.close()
+            #   print("\n Server closed the connection \n")
 
-            #    # Come out from the infinite while loop as the file has been copied from client.
-            #    break
+            #   # Come out from the infinite while loop as the file has been copied from client.
+            #   break
             # time.sleep(1)
 
             # upload_file(namenode_datanode_sockets, argument1, argument1)
