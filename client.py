@@ -5,6 +5,9 @@ import hashlib
 
 ok = "ok"
 
+MY_IP = "10.91.52.97"
+LOL = "0.0.0.0"
+
 BUFF_SIZE = 1024
 SERVER_ADDR = ("10.91.51.111", 2345)
 
@@ -38,6 +41,8 @@ def try_login():
     encoded_password = hashlib.sha1(password.encode('utf-8')).digest()
     message_dict = {"command" : -1, "argument1" : login, "argument2" : str(encoded_password)}
     message = json.dumps(message_dict)
+
+    print(str(encoded_password))
 
     # reply = send_to_namenode(SERVER_ADDR, message)
     reply = '{"response" : "yes"}'
@@ -174,12 +179,12 @@ def write_file():
             s.connect((ips[i], int(ports[i])))
             # We can send file sample.txt
             file = open(filename, "rb")
-            SendData = file.read(1024)
+            SendData = file.read(BUFF_SIZE)
 
             while SendData:
                 # Now send the content of sample.txt to server
                 s.send(SendData)
-                SendData = file.read(1024)
+                SendData = file.read(BUFF_SIZE)
 
             # Close the connection from client side
             s.close()
@@ -187,9 +192,43 @@ def write_file():
             return render_template("main.html", write_file_message = "Error occured while uploading file")
     return render_template("main.html", write_file_message = "Successfully uploaded the file!")
 
+@app.route("/read_file", methods = ["POST", "GET"])
+def read_file():
+    global MY_IP
+    filename = request.form.getlist('filename')[0]
 
+    message_dict = {"command" : 3, "argument1" : filename, "argument2" : ""}
+    message = json.dumps(message_dict)
+
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "file successfully uploaded"
+
+    if msg != "No such file":
+        s = socket.socket()
+        PORT = 9899
+        s.bind((MY_IP, PORT))
+        s.listen(10)
+
+        # Now we can establish connection with server
+        conn, addr = s.accept()
+        # Open one recv.txt file in write mode
+        file = open(filename, "wb")
+        while True:
+            # Receive any data from client side
+            RecvData = conn.recv(BUFF_SIZE)
+            while RecvData:
+                file.write(RecvData)
+                RecvData = conn.recv(BUFF_SIZE)
+            # Close the file opened at server side once copy is completed
+            file.close()
+            # Close connection with client
+            conn.close()
+            # Come out from the infinite while loop as the file has been copied from client.
+            break
+        s.close()
+        return render_template("main.html", read_file_message = "Successfully downloaded a file!")
+    else:
+        return render_template("main.html", read_file_message = "No such file exists!")
 
 if __name__ == "__main__":
-    my_ip = "10.91.52.97"
-    lol = "0.0.0.0"
-    app.run(host = my_ip, port = FLASK_PORT)
+    app.run(host = MY_IP, port = FLASK_PORT)
