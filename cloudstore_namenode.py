@@ -435,18 +435,31 @@ while True:
     msg = client_socket.recv(1024)
     decoded_msg = str(msg, "utf8")
     if decoded_msg != "":
-        print(decoded_msg)
-        temp = decoded_msg
-        command, argument1, argument2 = temp.split(
-            "%"
-        )  # argument is file name, directort name and etc.
-        command = int(command)
+        decoded_dict = json.loads(decoded_msg)
+        command = decoded_dict["command"]
+        argument1 = decoded_dict["argument1"]
+        argument2 = decoded_dict["argument2"]
         command_description = command_name(command)
         print("Command id:", command)
         print("TO DO: ", command_description)
         print("Argument01 (file/dir name): ", argument1)
         print("Argument02 (path): ", argument2)
         decoded_msg = ""
+        
+    # decoded_msg = str(msg, "utf8")
+    # if decoded_msg != "":
+    #     print(decoded_msg)
+    #     temp = decoded_msg
+    #     command, argument1, argument2 = temp.split(
+    #         "%"
+    #     )  # argument is file name, directort name and etc.
+    #     command = int(command)
+    #     command_description = command_name(command)
+    #     print("Command id:", command)
+    #     print("TO DO: ", command_description)
+    #     print("Argument01 (file/dir name): ", argument1)
+    #     print("Argument02 (path): ", argument2)
+    #     decoded_msg = ""
 
         # do smth create, get info etc
         response = ""
