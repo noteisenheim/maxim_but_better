@@ -16,10 +16,60 @@
 
         <!-- Create the file -->
 
-       <form action=create_file method="POST">
+        <form action=create_file method="POST">
+            <input type="text" id="filename" name="filename">
+            <input type="submit" value="Create file">
+
+        </form>
+
+        {% if create_file_message %}
+            <p> {{create_file_message}} </p>
+        {% endif %}
+
+       <!-- Delete the file -->
+
+        <form action=delete_file method="POST">
            <input type="text" id="filename" name="filename">
-           <input type="submit" value="Create file">
-       </form> 
+           <input type="submit" value="Delete file">
+        </form>
+
+        {% if delete_file_message %}
+            <p> {{delete_file_message}} </p>
+        {% endif %}
+
+        <!-- Information about the file -->
+
+        <form action=info_file method="POST">
+            <input type="text" id="filename" name="filename">
+            <input type="submit" value="Get information about file">
+        </form>
+
+        {% if info_file_message %}
+            <p> {{info_file_message}} </p>
+        {% endif %}
+
+        <!-- Copy the file -->
+
+        <form action=copy_file method="POST">
+            <input type="text" id="filename" name="filename">
+            <input type="submit" value="Copy file">
+        </form>
+
+        {% if copy_file_message %}
+            <p> {{copy_file_message}} </p>
+        {% endif %}
+
+        <!-- Move the file -->
+
+        <form action=move_file method="POST">
+            <input type="text" id="dest_dir" name="dest_dir">
+            <input type="text" id="filename" name="filename">
+            <input type="submit" value="Move file">
+        </form>
+
+        {% if move_file_message %}
+            <p> {{move_file_message}} </p>
+        {% endif %}
 
         <!-- Ations with directories -->
 

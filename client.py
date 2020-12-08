@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import socket
 import json
 
+ok = "ok"
+
 BUFF_SIZE = 1024
 SERVER_ADDR = ("10.91.51.111", 2345)
 
@@ -35,7 +37,8 @@ def try_login():
     message_dict = {"command" : -1, "argument1" : login, "argument2" : password}
     message = json.dumps(message_dict)
 
-    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = '{"response" : "yes"}'
 
     decoded = json.loads(reply)
 
@@ -46,15 +49,59 @@ def try_login():
 
 @app.route("/create_file", methods = ["POST", "GET"])
 def create_file():
+    filename = request.form.getlist('filename')[0]
 
-    filename = get_full_name(CUR_DIR, request.form.getlist('filename')[0])
+    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "some reply"
 
-    message = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    return render_template("main.html", create_file_message = reply)
 
-    if response["status"] == "ok":
-        return render_template("main.html")
-    elif response["status"] == "notok":
-        return render_template("main.html", create_file_error = response["args"]["error"])
+@app.route("/delete_file", methods = ["POST", "GET"])
+def delete_file():
+    filename = request.form.getlist('filename')[0]
+
+    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "file was deleted"
+
+    return render_template("main.html", delete_file_message = reply)
+
+@app.route("/info_file", methods = ["POST", "GET"])
+def info_file():
+    filename = request.form.getlist('filename')[0]
+
+    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "info about file"
+
+    return render_template("main.html", info_file_message = reply)
+
+@app.route("/copy_file", methods = ["POST", "GET"])
+def copy_file():
+    filename = request.form.getlist('filename')[0]
+
+    message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "file was copied"
+
+    return render_template("main.html", copy_file_message = reply)
+
+@app.route("/move_file", methods = ["POST", "GET"])
+def move_file():
+    filename = request.form.getlist('filename')[0]
+    dest_dir = request.form.getlist('dest_dir')[0]
+
+    message_dict = {"command" : 1, "argument1" : filename, "argument2" : dest_dir}
+    message = json.dumps(message_dict)
+    # reply = send_to_namenode(SERVER_ADDR, message)
+    reply = "file was moved"
+
+    return render_template("main.html", move_file_message = reply)
 
 if __name__ == "__main__":
     my_ip = "10.91.52.97"
