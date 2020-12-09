@@ -5,6 +5,8 @@ import time
 import tqdm
 import os
 from math import ceil
+import sqlite3
+from sqlite3 import Error
 
 # with open('cloudstore_namenode_conf.json') as json_file:
 #   configuration = json.load(json_file)
@@ -13,12 +15,13 @@ from math import ceil
 CURRENT_USER_LOC = ""
 USER_TREE = {'':''}
 CREDENTIALS = {'login': "b'[\\xaaa\\xe4\\xc9\\xb9??\\x06\\x82%\\x0bl\\xf83\\x1b~\\xe6\\x8f\\xd8'"}
-NAMENODE_IP = "10.91.51.111"
-DATANODES = [("10.91.51.111", 20001)]
-CLIENT_IP = "10.91.52.97"
-
+NAMENODE_IP = "192.168.1.52"
+DATANODES = [("192.168.1.52", 20001)]
+CLIENT_IP = "192.168.1.153"
+DB_FILE = 'database.db'
 
 def first_connect(addrs):
+
     namenode_datanode_sockets = []
     start_info = []
     for addr in addrs:
@@ -39,9 +42,6 @@ def first_connect(addrs):
 
 
 
-'''
-TODO same name of directory in different directories
-'''
 
 
 def find_path(graph, start, end, path=[]):
@@ -261,7 +261,7 @@ def upload_file(my_sockets, local_fname, server_filename, clientip, clientport):
     #   with open(local_fname, 'rb') as f:
     #        for _ in progress:
     #          bytes_read = f.read(8)
-                    
+
     #          if not bytes_read:
     #            break
 
@@ -311,7 +311,7 @@ def files_list_in_dir(dir_name): #ls
         print('dir not found')
         print(USER_TREE)
         return -1
-        
+
 
 def check_dir_files(dir_name):
     global USER_TREE
@@ -327,7 +327,7 @@ def command_name(com):
         temp = "initialize"
     elif  command == 1:
         temp = "file create"
-    elif command == 2: 
+    elif command == 2:
         temp = "file read"
     elif command == 3:
         temp = "file write"
@@ -347,7 +347,7 @@ def command_name(com):
         temp = "make directory"
     elif command == 11:
         temp = "delete directory"
-        
+
     return temp
 
 # init datanodes
@@ -390,7 +390,29 @@ first_server_socket.settimeout(2) #
 # second_server_socket.listen(1)
 # second_server_socket.settimeout(2) #
 
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+    except Error as e:
+        print(e)
 
+    return conn
+
+def authorize(argument1, argument2):
+    conn = create_connection(DB_FILE)
+    if conn:
+        cur = conn.cursor()
+        cur.execute("SELECT login FROM credentials WHERE login = {}".format("'" + argument1 + "'"))
+        login = cur.fetchall()
+        if len(login) > 0:
+            cur.execute("SELECT password FROM credentials WHERE login = {}".format("'" + argument1 + "'"))
+            password = cur.fetchall()[0][0]
+            if password == argument2:
+                conn.close()
+                return True
+    conn.close()
+    return False
 
 
 while True:
@@ -442,7 +464,7 @@ while True:
     time.sleep(1)
     # create_file(namenode_datanode_sockets, 'tempfile.txt')
     # receive command and arguments
-    
+
     msg = client_socket.recv(1024)
     decoded_msg = str(msg, "utf8")
     if decoded_msg != "":
@@ -460,15 +482,13 @@ while True:
 
         # do smth create, get info etc
         response = ""
-        
+
         if command == -1:
             # authorize user
             print('robit')
-            if argument1 in CREDENTIALS.keys():
-                if CREDENTIALS[argument1] == argument2:
-                    response = json.dumps({'response': 'yes'})
-                else:
-                    response = json.dumps({'response': 'no'})
+
+            if authorize(argument1, argument2):
+                response = json.dumps({'response': 'yes'})
             else:
                 response = json.dumps({'response': 'no'})
 
@@ -511,7 +531,7 @@ while True:
                 #    ServerIp = "10.0.0.101"
                 #    PORT = 9899
                 # s = socket.socket()
-                
+
                 # s.connect((ServerIp, PORT))
 
                 # # We can send file sample.txt
@@ -623,8 +643,8 @@ while True:
                 PORT = 9899
             #file move (filename, path)
             #get file
-            #cd 
-            # upload 
+            #cd
+            # upload
             get_file(namenode_datanode_sockets, argument1)
             delete_file(namenode_datanode_sockets, argument1)
             cd(argument2)
@@ -645,7 +665,7 @@ while True:
             if files_list != -1:
                 response = "\n"
                 for i in files_list:
-                    response = response + i + " \n" 
+                    response = response + i + " \n"
                 response = "Files in the directory {}:".format(argument1) + response
         elif command == 10:
             # create directory
@@ -661,7 +681,7 @@ while True:
                 files_list = files_list_in_dir(argument1)
                 temp_r = "\n"
                 for i in files_list:
-                    temp_r = temp_r + i + " \n" 
+                    temp_r = temp_r + i + " \n"
                 response = ("yes/no - Do you want to delete these files too? \n {}".format(temp_r))  # + list of files
 
                 client_socket.send(bytes(response, "utf8"))
