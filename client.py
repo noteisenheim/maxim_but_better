@@ -44,8 +44,8 @@ def try_login():
 
     print(str(encoded_password))
 
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = '{"response" : "yes"}'
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = '{"response" : "yes"}'
 
     decoded = json.loads(reply)
 
@@ -60,8 +60,8 @@ def create_file():
 
     message_dict = {"command" : 1, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "some reply"
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "some reply"
 
     return render_template("main.html", create_file_message = reply)
 
@@ -71,8 +71,8 @@ def delete_file():
 
     message_dict = {"command" : 4, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "file was deleted"
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "file was deleted"
 
     return render_template("main.html", delete_file_message = reply)
 
@@ -82,8 +82,8 @@ def info_file():
 
     message_dict = {"command" : 5, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "info about file"
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "info about file"
 
     return render_template("main.html", info_file_message = reply)
 
@@ -93,8 +93,8 @@ def copy_file():
 
     message_dict = {"command" : 6, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "file was copied"
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "file was copied"
 
     return render_template("main.html", copy_file_message = reply)
 
@@ -105,8 +105,8 @@ def move_file():
 
     message_dict = {"command" : 7, "argument1" : filename, "argument2" : dest_dir}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "file was moved"
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "file was moved"
 
     return render_template("main.html", move_file_message = reply)
 
@@ -116,8 +116,8 @@ def open_dir():
 
     message_dict = {"command" : 8, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "dir {} is opened".format(dirname)
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "dir {} is opened".format(dirname)
 
     return render_template("main.html", open_dir_message = reply)
 
@@ -127,8 +127,8 @@ def read_dir():
 
     message_dict = {"command" : 9, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "content is: 1) biba 2) boba 3) pupa 4) lupa"
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "content is: 1) biba 2) boba 3) pupa 4) lupa"
 
     return render_template("main.html", read_dir_message = reply)
 
@@ -138,8 +138,8 @@ def make_dir():
 
     message_dict = {"command" : 10, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "directory {} is created".format(dirname)
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "directory {} is created".format(dirname)
 
     return render_template("main.html", make_dir_message = reply)
 
@@ -149,8 +149,8 @@ def del_dir():
 
     message_dict = {"command" : 11, "argument1" : dirname, "argument2" : ""}
     message = json.dumps(message_dict)
-    # reply = send_to_namenode(SERVER_ADDR, message)
-    reply = "directory {} is deleted (oops)".format(dirname)
+    reply = send_to_namenode(SERVER_ADDR, message)
+    # reply = "directory {} is deleted (oops)".format(dirname)
 
     return render_template("main.html", del_dir_message = reply)
 
@@ -162,6 +162,7 @@ def write_file():
     message = json.dumps(message_dict)
 
     reply = send_to_namenode(SERVER_ADDR, message)
+    print(reply)
     # reply = "file successfully uploaded"
 
     datanodes_data = reply.split('%')
@@ -170,7 +171,6 @@ def write_file():
     ips = [datanodes_data[i] for i in range(1, len(datanodes_data)-2) if i % 2 != 0]
     ports = [datanodes_data[i] for i in range(1, len(datanodes_data)-2) if i % 2 == 0]
 
-    time.sleep(2)
     # send FILE
     for i in range(len(ips)):
         try:
@@ -197,20 +197,24 @@ def read_file():
     global MY_IP
     filename = request.form.getlist('filename')[0]
 
-    message_dict = {"command" : 3, "argument1" : filename, "argument2" : ""}
+    message_dict = {"command" : 2, "argument1" : filename, "argument2" : ""}
     message = json.dumps(message_dict)
 
+    print("waiting for 1st reply")
     reply = send_to_namenode(SERVER_ADDR, message)
+    print("got reply {}".format(reply))
     # reply = "file successfully uploaded"
 
-    if msg != "No such file":
+    if reply != "No such file":
         s = socket.socket()
         PORT = 9899
         s.bind((MY_IP, PORT))
         s.listen(10)
 
         # Now we can establish connection with server
+        print("waiting for conn")
         conn, addr = s.accept()
+        print("got conn")
         # Open one recv.txt file in write mode
         file = open(filename, "wb")
         while True:
