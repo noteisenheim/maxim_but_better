@@ -5,11 +5,12 @@ import hashlib
 
 ok = "ok"
 
-MY_IP = "10.91.52.97"
+MY_IP = "18.222.107.93"
 LOL = "0.0.0.0"
 
 BUFF_SIZE = 1024
-SERVER_ADDR = ("10.91.51.111", 2345)
+# SERVER_ADDR = ("18.189.188.54", 2345)
+SERVER_ADDR = ("18.189.188.54", 2345)
 
 def send_to_namenode(SERVER_ADDR, message):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,8 +39,9 @@ def try_login():
 
     login = request.form.getlist('login')[0]
     password = request.form.getlist('password')[0]
-    encoded_password = hashlib.sha1(password.encode('utf-8')).digest()
-    message_dict = {"command" : -1, "argument1" : login, "argument2" : str(encoded_password)}
+    encoded_password = str(hashlib.sha224(password.encode('utf-8')).hexdigest())
+    # encoded_password = password
+    message_dict = {"command" : -1, "argument1" : login, "argument2" : encoded_password}
     message = json.dumps(message_dict)
 
     print(str(encoded_password))
@@ -208,7 +210,7 @@ def read_file():
     if reply != "No such file":
         s = socket.socket()
         PORT = 9899
-        s.bind((MY_IP, PORT))
+        s.bind((LOL, PORT))
         s.listen(10)
 
         # Now we can establish connection with server
@@ -235,4 +237,4 @@ def read_file():
         return render_template("main.html", read_file_message = "No such file exists!")
 
 if __name__ == "__main__":
-    app.run(host = MY_IP, port = FLASK_PORT)
+    app.run(host = LOL, port = FLASK_PORT)
