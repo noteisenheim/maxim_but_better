@@ -8,10 +8,10 @@ import tqdm
 import time
 from math import ceil
 
-WORKING_DIR = 'C:/Users/noteisenheim/Documents/better_maxim'
+WORKING_DIR = '/Users/alla/Desktop/maxim_but_better'
 MAIN_DIR = ''
 
-DATANODE_IP = "10.91.51.111"
+DATANODE_IP = "c"
 
 
 os.chdir(WORKING_DIR)
@@ -81,7 +81,7 @@ def send_file(decoded_msg, nsocket):
     file_path = decoded_msg
 
     print(file_path)
-    
+
     # # start just for test
     # with open(file_path[1:], 'w') as f:
     #     f.write('5'*100)
@@ -107,7 +107,7 @@ def send_file(decoded_msg, nsocket):
         with open(file_path[1:], 'rb') as f:
             for _ in progress:
                 bytes_read = f.read(8)
-                
+
                 if not bytes_read:
                     break
 
@@ -142,7 +142,7 @@ def download_file(decoded_msg, nsocket):
 
             bytes_read = csock.recv(8)
 
-            
+
             if not bytes_read:
                 break
 
@@ -246,7 +246,7 @@ while zhopa:
                             print(send_file)
                             file_relevant = decoded_msg.split()[-1]
                             client_ip, client_port = file_relevant.split('%')[1:]
-                            send_file(file_relevant.split('%')[0], (client_ip, int(client_port)))    
+                            send_file(file_relevant.split('%')[0], (client_ip, int(client_port)))
                         elif 'upload' in decoded_msg:
                             print(download_file)
                             file_relevant = decoded_msg.split()[-1]
