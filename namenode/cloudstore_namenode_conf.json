@@ -1,5 +1,0 @@
-// client configuration file
-
-{
-	"datanodes": [{"host": "10.0.0.12",}, {"host": "10.0.0.13",}]
-}
