@@ -5,12 +5,12 @@ import hashlib
 
 ok = "ok"
 
-MY_IP = "18.222.107.93"
+MY_IP = "3.140.114.105"
 LOL = "0.0.0.0"
 
 BUFF_SIZE = 1024
 # SERVER_ADDR = ("18.189.188.54", 2345)
-SERVER_ADDR = ("18.189.188.54", 2345)
+SERVER_ADDR = ("3.138.229.169", 2345)
 
 def send_to_namenode(SERVER_ADDR, message):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

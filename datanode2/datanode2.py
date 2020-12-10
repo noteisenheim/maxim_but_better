@@ -11,7 +11,7 @@ from math import ceil
 WORKING_DIR = '/'
 MAIN_DIR = ''
 
-DATANODE_IP = "18.221.48.233"
+DATANODE_IP = "52.15.186.178"
 lol = "0.0.0.0"
 
 PORT = 20003

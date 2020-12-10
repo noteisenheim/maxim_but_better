@@ -15,9 +15,9 @@ lol = "0.0.0.0"
 CURRENT_USER_LOC = ""
 USER_TREE = {'':''}
 CREDENTIALS = {'login': "b'[\\xaaa\\xe4\\xc9\\xb9??\\x06\\x82%\\x0bl\\xf83\\x1b~\\xe6\\x8f\\xd8'"}
-NAMENODE_IP = "18.189.188.54"
-DATANODES = [("3.15.11.64", 20001), ("18.221.48.233", 20003)]
-CLIENT_IP = "18.222.107.93"
+NAMENODE_IP = "3.138.229.169"
+DATANODES = [("3.128.228.113", 20001), ("52.15.186.178", 20003)]
+CLIENT_IP = "3.140.114.105"
 DB_FILE = 'database.db'
 
 def first_connect(addrs):
@@ -694,11 +694,11 @@ while True:
                 print(decoded_ans)
             else:
                 response = "not needed"  # + list of files
-                client_socket.send(bytes(response, "utf8"))
 
                 rmdir(namenode_datanode_sockets, argument1)
                 decoded_ans == "notNeeded"
                 response = "Directory {} deleted\n".format(argument1)
+                client_socket.send(bytes(response, "utf8"))
                 print(response)
 
 
