@@ -648,7 +648,7 @@ while True:
             #get file
             #cd
             # upload
-            get_file(namenode_datanode_sockets, argument1)
+            get_file(namenode_datanode_sockets, argument1, ServerIp, PORT)
             delete_file(namenode_datanode_sockets, argument1)
             cd(argument2)
             upload_file(namenode_datanode_sockets, argument1, argument1, ServerIp, PORT)
@@ -670,6 +670,8 @@ while True:
                 for i in files_list:
                     response = response + i + " \n"
                 response = "Files in the directory {}:".format(argument1) + response
+            else:
+                response = "No such directory"
         elif command == 10:
             # create directory
             mkdir(namenode_datanode_sockets, argument1)
